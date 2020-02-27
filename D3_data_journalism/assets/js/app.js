@@ -19,7 +19,7 @@ var chartGroup = svg.append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 //Import csv
-d3.csv("/data/data.csv").then(function(healthData) {
+d3.csv("assets/data/data.csv").then(function(healthData) {
     console.log(healthData);
 
     //create function to parse data
@@ -30,16 +30,35 @@ d3.csv("/data/data.csv").then(function(healthData) {
 
     //create scaling functions
     var xLinearScale = d3.scaleLinear()
-        .domain([0, d3.max(healthData, d => d.poverty)])
+        // .domain([0, d3.max(healthData, d => d.poverty)])
         .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
-        .domain([0, d3.max(healthData, d => d.healthcare)])
+        // .domain([0, d3.max(healthData, d => d.healthcare)])
         .range([height, 0]);
 
     //create axis functions
     var bottomAxis = d3.axisBottom(xLinearScale);
     var leftAxis = d3.axisLeft(yLinearScale);
+
+    var xMin = d3.min(healthData, function(data) {
+        return data.poverty;
+    });
+
+    var xMax = d3.max(healthData, function(data) {
+        return data.poverty;
+    });
+
+    var yMin = d3.min(healthData, function(data) {
+        return data.healthcare;
+    });
+
+    var yMax = d3.max(healthData, function(data) {
+        return data.healthcare;
+    });
+
+    xLinearScale.domain([xMin, xMax]);
+    yLinearScale.domain([yMin, yMax]);
 
     //add x axis
     chartGroup.append("g")
@@ -58,7 +77,7 @@ d3.csv("/data/data.csv").then(function(healthData) {
         .attr("cx", d => xLinearScale(d.poverty))
         .attr("cy", d => yLinearScale(d.healthcare))
         .attr("r", "15")
-        .attr("fill", "blue")
+        .attr("fill", "lightblue")
         .attr("opacity", ".5");
 
     //initialize tool tip
@@ -81,7 +100,26 @@ d3.csv("/data/data.csv").then(function(healthData) {
           toolTip.hide(data);
         });
 
+    
     //create axis labels 
+    chartGroup.append("text")
+    .style("font-size", "12px")
+    .selectAll("tspan")
+    .data(healthData)
+    .enter()
+    .append("tspan")
+      .attr("x", function(data) {
+          return xLinearScale(data.poverty +1.3);
+      })
+      .attr("y", function(data) {
+          return yLinearScale(data.healthcare +.1);
+      })
+      .text(function(data) {
+          return data.abbr
+      });
+    
+
+
     chartGroup.append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - margin.left + 40)
