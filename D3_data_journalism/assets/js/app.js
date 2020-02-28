@@ -109,10 +109,10 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
     .enter()
     .append("tspan")
       .attr("x", function(data) {
-          return xLinearScale(data.poverty +1.3);
+          return xLinearScale(data.poverty);
       })
       .attr("y", function(data) {
-          return yLinearScale(data.healthcare +.1);
+          return yLinearScale(data.healthcare);
       })
       .text(function(data) {
           return data.abbr
